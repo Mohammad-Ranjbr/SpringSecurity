@@ -63,4 +63,14 @@ public class EasyBankBackendApplication {
 	// Failed: Throws an AuthenticationException if the user information is not valid or the password is incorrect.
 	// ExceptionTranslationFilter catches this exception and redirects the user to a login page or an error page.
 
+	// AbstractAuthenticationProcessingFilter: Abstract class for authentication filters. The actual authentication logic
+	// is implemented in subclasses such as UsernamePasswordAuthenticationFilter.
+	// UsernamePasswordAuthenticationFilter: Extracts the username and password from the HttpServletRequest,
+	// creates an Authentication object (UsernamePasswordAuthenticationToken), and uses the AuthenticationManager to process the authentication.
+	// Authentication process:
+	// UsernamePasswordAuthenticationToken: Represents the authentication request and contains username and password.
+	// AuthenticationManager: Interface for authentication with ProviderManager as a common implementation.
+	// ProviderManager: Searches through various AuthenticationProvider implementations to validate
+	// credentials and uses providers such as DaoAuthenticationProvider.
+
 }
