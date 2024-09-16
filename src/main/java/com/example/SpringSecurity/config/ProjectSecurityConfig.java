@@ -88,6 +88,12 @@ public class ProjectSecurityConfig {
     // It goes to the InMemoryUserDetailsManager class in the constructor of this class, which wants to create all the created users,
     // and calls the createUser method of the InMemoryUserDetailsManager class, which in this method first checks if there is a
     // user with this username, if there is not, a HashMap called users updates and adds new users to it
+
+    // UserDetailsService: This interface contains a method used to load user information from any type of storage system (internal memory or database) based on username.
+    // This interface is used when the organization only needs user authentication and does not need user management (such as creating, deleting or changing).
+    // UserDetailsManager: This interface inherits from UserDetailsService and adds methods like createUser, deleteUser and changePassword.
+    // Common implementations include InMemoryUserDetailsManager and JdbcUserDetailsManager. This interface is used in scenarios where organizations need complete user management (CRUD).
+
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user = User.withUsername("user")
