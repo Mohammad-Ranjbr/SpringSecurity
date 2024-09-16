@@ -2,6 +2,7 @@ package com.example.SpringSecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -88,9 +90,15 @@ public class ProjectSecurityConfig {
     // user with this username, if there is not, a HashMap called users updates and adds new users to it
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails user = User.withUsername("user").password("{noop}123456").authorities("read").build();
+        UserDetails user = User.withUsername("user")
+                .password("{noop}eazybankuser@123456")
+                .authorities("read")
+                .build();
         // Convert plain text to hash value , So that if someone gets access to the code, they will not get access to the password
-        UserDetails admin = User.withUsername("admin").password("{bcrypt}$2a$12$SScPnqeOTukirwLml/5N1eTwZFdpDWcfy5iMyjvWvV8DLXu5ktUdK").authorities("admin").build();
+        UserDetails admin = User.withUsername("admin")
+                .password("{bcrypt}$2a$12$1UN2OGBUcp4Opsfn.RJN5.IRgB5uqPC9tDoG.F/j3itwEqXu2uiPS")
+                .authorities("admin")
+                .build();
         return new InMemoryUserDetailsManager(user,admin);
     }
 
@@ -104,6 +112,16 @@ public class ProjectSecurityConfig {
     public PasswordEncoder passwordEncoder(){
         //return new BCryptPasswordEncoder();
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    /**
+     * From Spring  Security 6.3 version
+     */
+    // CompromisedPasswordChecker: An API for checking if a password has been compromised
+    // When you enter the simple password, it gives this message (The provided password is compromised, please change your password)
+    @Bean
+    public CompromisedPasswordChecker compromisedPasswordChecker(){
+        return new HaveIBeenPwnedRestApiPasswordChecker();
     }
 
 }
