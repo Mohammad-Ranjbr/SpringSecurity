@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -73,11 +75,35 @@ public class ProjectSecurityConfig {
         return http.build();
     }
 
+    // The UserDetailsService interface is used as a core interface for loading user information.
+    // This interface is responsible for retrieving user details (Username, Password, Authorities) that are required for authentication.
+    // UserDetails in Spring Security is an interface that represents the details of a user for authentication. (Provides core user information.)
+    // In Spring Security, there is a predefined class called org.springframework.security.core.userdetails.User
+    // that is the default implementation of the UserDetails interface. This class helps you easily introduce
+    // user information to Spring Security without having to write a custom implementation of the UserDetails interface.
+
+    // When we want to build the user, it goes to the User class and the build method here first tries to encode the password.
+    // It goes to the InMemoryUserDetailsManager class in the constructor of this class, which wants to create all the created users,
+    // and calls the createUser method of the InMemoryUserDetailsManager class, which in this method first checks if there is a
+    // user with this username, if there is not, a HashMap called users updates and adds new users to it
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user = User.withUsername("user").password("{noop}123456").authorities("read").build();
-        UserDetails admin = User.withUsername("admin").password("{noop}654321").authorities("admin").build();
+        // Convert plain text to hash value , So that if someone gets access to the code, they will not get access to the password
+        UserDetails admin = User.withUsername("admin").password("{bcrypt}$2a$12$SScPnqeOTukirwLml/5N1eTwZFdpDWcfy5iMyjvWvV8DLXu5ktUdK").authorities("admin").build();
         return new InMemoryUserDetailsManager(user,admin);
+    }
+
+    // PasswordEncoderFactories Used for creating PasswordEncoder instances (default: BCryptPasswordEncoder)
+    // BCryptPasswordEncoder uses the bcrypt algorithm, which is a password hashing algorithm
+    // Salting: This implementation automatically combines each password with a unique "salt".
+    // This means that even if two users use the same password, their hashed values will be different.
+    // Adjustable difficulty support: bcrypt uses a difficulty parameter (cost factor) that controls the number of calculations required to generate a hash.
+    // The higher this parameter is, the more time it takes to generate the hash, and as a result, higher security is provided.
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        //return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 }
