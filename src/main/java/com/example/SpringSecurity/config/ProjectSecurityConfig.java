@@ -94,6 +94,17 @@ public class ProjectSecurityConfig {
     // UserDetailsManager: This interface inherits from UserDetailsService and adds methods like createUser, deleteUser and changePassword.
     // Common implementations include InMemoryUserDetailsManager and JdbcUserDetailsManager. This interface is used in scenarios where organizations need complete user management (CRUD).
 
+    // UserDetails shows basic user information such as username, password and authorities.
+    // Authentication includes methods such as getPrincipal(), isAuthenticated() and getCredentials().
+    // This interface checks the authentication success or failure status and manages the credentials during the process.
+    // UserDetails focuses on storing user information that is required for authentication.
+    // Authentication manages the state and authentication process.
+    // Keeping these two interfaces separate reduces unnecessary overhead in the authentication process, especially in cases where some user details are no longer relevant after authentication.
+    // UsernamePasswordAuthenticationToken class: This class is one of the most common implementations of the Authentication interface used in username and password login flows.
+    // This class holds the user ID (Principal), credentials, which usually include a password, and authorities or roles.
+    // After successful authentication, the Spring Security framework calls the eraseCredentials method to clear the credentials
+    // (especially the password) and prevent unnecessary disclosure of sensitive information.
+
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user = User.withUsername("user")
