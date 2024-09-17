@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -59,13 +60,16 @@ public class ProjectSecurityConfig {
     // Disable formLogin(): In projects based on REST APIs, login forms are usually not needed, and it is more appropriate to use httpBasic() or other header-based authentication methods.
     // Using deprecated methods (like formLogin() in certain scenarios) can cause problems in the future, as these methods may be removed in future versions of Spring Security.
 
+    // In Spring Security, CSRF is enabled by default and provides protection for APIs that modify data (such as POST, PUT, DELETE).
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.authorizeHttpRequests((requests) -> requests
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("myAccount","myBalance","myLoans","myCards").authenticated()
-                .requestMatchers("notices","contact","/error").permitAll());
+                .requestMatchers("notices","contact","/error","/register").permitAll());
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
         // http.formLogin(flc -> flc.disable());
         http.formLogin(withDefaults());
