@@ -119,6 +119,10 @@ public class ProjectSecurityConfig {
 //        return new InMemoryUserDetailsManager(user,admin);
 //    }
 
+    // JdbcUserDetailsManager: Provides CRUD operations for both users and groups. JdbcUserDetailsManager extends JdbcDaoImpl and implements UserDetailsManager
+    // JdbcDaoImpl: UserDetailsService implementation which retrieves the user details (username, password, enabled flag, and authorities) from a database using JDBC queries.
+    // A default database schema is assumed, with two tables "users" (username , password , enabled) and "authorities" (username , authority). The Users table
+    //
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource){
         return new JdbcUserDetailsManager(dataSource);
