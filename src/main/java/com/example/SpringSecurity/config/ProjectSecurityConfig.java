@@ -134,6 +134,29 @@ public class ProjectSecurityConfig {
     // This means that even if two users use the same password, their hashed values will be different.
     // Adjustable difficulty support: bcrypt uses a difficulty parameter (cost factor) that controls the number of calculations required to generate a hash.
     // The higher this parameter is, the more time it takes to generate the hash, and as a result, higher security is provided.
+
+    // Hashing
+    // Hashing is one of the most widely used methods for securely managing passwords. In this method, the original data (such as a password) is converted into
+    // a hash value that is irreversible. Typically, hashes are stored as long strings of random characters where small changes to the input can produce completely different output.
+    // Hash algorithms such as SHA-256 and bcrypt are used to secure passwords. bcrypt is more secure due to its more secure structure and the use of "salt" which
+    // adds a random value to each password. This makes it so that if two users have the same password, their hashes will be different.
+    // Encryption
+    // Encryption is another data protection method that converts data into unreadable formats. Unlike hashing, encryption is reversible.
+    // This means that having the private key or the decryption key, the encrypted data can be restored to its original state.
+    // Encryption is done with two main models:
+    // Symmetric encryption: In this method, a key is used for encryption and decryption.
+    // Asymmetric encryption: In this method, two keys are used: a public key for encryption and a private key for decryption.
+    // Encryption is usually used to protect sensitive data such as messages or files, but is not suitable for passwords, as there is a possibility of password recovery.
+    // Suppose application 1 wants to get a file from application 2, application 1 creates the public key and private key and sends the public key to application 2,
+    // application 2 encrypts (Cipher ) the data with the public key and sends it to application 1. Now, if someone accesses the data in the middle,
+    // application 2 encrypts (Cipher Data) the data with the public key and sends it to application 1. Now, if someone accesses the data in the middle,
+    // he cannot use it because he does not have the private key, so he reaches application 1 and decrypts it with the private key.
+    // Encoding
+    // Encoding is simply a process of converting data into a format that can be understood by certain systems or protocols. For example,
+    // in e-mails or data transmission over the Internet, Encoding is used to convert data into text form.
+    // Base64 is one of the most popular encoding methods, usually used to transfer binary data (such as images or videos) to text format.
+    // The most important thing about encryption is that it doesn't provide any security because the encryption is reversible and anyone who has the encrypted data can convert it to the original data.
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         //return new BCryptPasswordEncoder();
