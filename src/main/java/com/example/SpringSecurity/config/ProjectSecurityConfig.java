@@ -157,6 +157,52 @@ public class ProjectSecurityConfig {
     // Base64 is one of the most popular encoding methods, usually used to transfer binary data (such as images or videos) to text format.
     // The most important thing about encryption is that it doesn't provide any security because the encryption is reversible and anyone who has the encrypted data can convert it to the original data.
 
+    // Disadvantages of hashing in password management
+    // A) Determinability of Hashes: Sameness of Hashes for Similar Inputs: If two different users use a simple password like 12345, the generated hash value will be the same for both users (e.g. AEF).
+    // b) High speed in generating hashes: Fast performance of hash functions: Hash functions such as SHA-256 are very fast and can hash a large number of passwords in a short period of time.
+    // Brute Force Attack
+    // Method: The hacker tries all possible combinations of characters as a password and compares the hash of each combination with the hash values in the database.
+    // Example: If the password is 12345 and its hash is AEF, the hacker will gradually try combinations 00000, 00001, ..., 12345 to reach AEF.
+    // Rainbow Tables Attack
+    // Method: The hacker creates a table of hash values for a set of common passwords.
+    // Application: After obtaining the stored hashes, the hacker can quickly find the master password by looking up the hash value in the table.
+    // Advantage: This method is much faster than exhaustive search because it does not need to recalculate hashes.
+    // Solutions to deal with the disadvantages of hashing
+    // To deal with the disadvantages of hashing and increase the security of password management, the following methods can be used:
+    // A) Use of Salt:
+    // Definition: Salt is a random value added to each password before hashing.
+    // Advantage: It makes the hashes of two users different even if they use the same password. This makes omnibus lookup attacks and rainbow tables more difficult.
+    // b) Use of Pepper:
+    // Definition: Pepper is a fixed, secret value that is added to all passwords and is usually kept at the application level.
+    // Advantage: Adding Pepper in addition to Salt increases security because even if Salt and hashes are leaked, passwords cannot be recovered without Pepper.
+    // c) Using more resistant hash algorithms:
+    // Examples: bcrypt, Argon2, PBKDF2.
+    // Advantage: These algorithms include mechanisms such as multiple iterations and salt addition that increase the time required to perform sweeping search attacks and improve security.
+    // d) Application of entry restrictions:
+    // Method: Limit the number of failed login attempts.
+    // Advantage: This method can prevent extensive search attacks because the hacker cannot access a large number of password combinations.
+
+    // Overcome Hashing drawbacks, Brute force and Dictionary table attacks
+    // 1. Use of Salt
+    // Salt is a random value added to the password before hashing.
+    // Each time a user registers a new password, a random value (eg "AEX2FDAC") is added to the original password (eg "12345").
+    // For example, a password combination with Salt would be something like "AEX2FDAC12345".
+    // This new combination is fed into the hash function and the final result, the hash, is stored.
+    // Why is Salt important? If two users have the same password like "12345", they will have different hashes due to different salt.
+    // Therefore, if an attacker can even get hold of the database hashes, he cannot use rainbow tables or ready-made
+    // dictionaries to crack the password because the Salt value is unique for each user.
+    // How it works at login: When a user enters their password, the system takes the stored Salt value for that user from the database,
+    // adds it to the entered password, and calculates the new hash. If this new hash matches the stored hash, the login is successful.
+    // 2. Using slow hashing algorithms
+    // Some hashing algorithms such as Bcrypt, Scrypt, and Argon2 are specifically designed to deliberately slow down the hashing process.
+    // Why is it important to slow down hashing? In exhaustive search attacks, the attacker tries a very large number of
+    // possible password combinations to arrive at the correct password. If the hashing process is fast,
+    // he can try millions of passwords in a short amount of time. But if hashing is slow (e.g. each hash takes 1-2 seconds),
+    // the time required for each attack attempt increases dramatically.
+    // Slow algorithms also use a lot of resources such as CPU and RAM. This makes attacking a hacker require a lot of computing resources and cost.
+    // For example, guessing an 8-character password with a combination of uppercase and lowercase letters,
+    // numbers, and special characters ، locking the account after several unsuccessful attempts can take years and cost an attacker a lot.
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         //return new BCryptPasswordEncoder();
