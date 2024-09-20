@@ -203,6 +203,37 @@ public class ProjectSecurityConfig {
     // For example, guessing an 8-character password with a combination of uppercase and lowercase letters,
     // numbers, and special characters ، locking the account after several unsuccessful attempts can take years and cost an attacker a lot.
 
+    // Login process using passwords:
+    // When a user enters their username and password, Spring Security first retrieves the hashed password value for that username from the database.
+    // Then, the salt stored along with the hash is extracted and the hashing process is performed again along with the entered password.
+    // Finally, this new hash is compared with the existing hash in the database. If these two values are equal, the user is logged in; Otherwise, the login will fail.
+
+    // PasswordEncoder has three methods:
+    // encode(): used to hash the password during registration. This method takes the raw password, hashes it, and randomly generates and uses the salt.
+    // matches(): Used to compare the password entered during login with the hash stored in the database. This method checks if the raw password matches the stored hash.
+    // upgradeEncoding(): This method returns false by default.
+    // If hashing is needed again (to increase security in very sensitive applications), this method should be overridden to return true and perform two-step hashing.
+
+    // Although algorithms such as Scrypt and Argon2 are stronger and more advanced, Spring Security recommends using Bcrypt for the following reasons:
+    //Ease of use: Bcrypt requires less configuration than Scrypt and Argon2, making it more suitable for everyday use.
+    //Better performance: Unlike Scrypt and Argon2, which can degrade application performance due to CPU, memory, and parallelization usage, Bcrypt provides a good balance between performance and security.
+
+    // Detailed review of the registration process:
+    // The user submits an email and password through Postman.
+    // Before sending the request, a breakpoint is placed inside the encode method of the bcrypt password encoder class so that it can check the hashing process line by line.
+    // Bcrypt first generates a random salt and then hashes it along with the password.
+    // Bcrypt also adds a version of the algorithm (e.g. 2A) and a power level (e.g. 10) to the hash.
+    // After checking this step, a new user with hashed email and password is saved in the database.
+    // If two users have the same password, their hashes will be different because a new salt is generated each time.
+    // User login:
+    // For the login process, the user enters his email and password.
+    // A breakpoint is placed inside the matches method of the bcrypt class, which is responsible for matching the entered password with the hashed password in the database.
+    // This method first converts the raw password into bytes and then compares the salt and hash values.
+    // Finally, if the password matches the hashed value, the user is successfully logged in.
+    // Importance of using Delegating Password Encoder:
+    // There is a lot of emphasis on the point that you should use delegating password encoder and never use a special encoder like bcrypt as hardware in the code.
+    // The advantage of delegating password encoder is that if new hash algorithms are introduced in the next versions of Spring Security, there is no need to change the code. Spring Security itself selects the appropriate algorithm according to the hash prefix.
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         //return new BCryptPasswordEncoder();
