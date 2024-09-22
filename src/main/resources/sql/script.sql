@@ -18,7 +18,3 @@ CREATE TABLE `customer` (
 
 INSERT  INTO `customer` (`email`,`pwd`,`role`) VALUES ('mohammad@gmail.com', '{noop}eazybankuser@123456', 'read');
 INSERT  INTO `customer` (`email`,`pwd`,`role`) VALUES ('admin@gmail.com', '{bcrypt}$2a$12$1UN2OGBUcp4Opsfn.RJN5.IRgB5uqPC9tDoG.F/j3itwEqXu2uiPS', 'admin');
-
-$2a$10$n7T2G2CtQLlPfjBHU9iKvu
-{bcrypt}$2a$10$n7T2G2CtQLlPfjBHU9iKvueljIQWVcT7UlBoE1wWZJkDiy8kvhVbK
-eljIQWVcT7UlBoE1wWZJkDiy8kvhVbK
