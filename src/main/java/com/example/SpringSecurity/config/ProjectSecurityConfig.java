@@ -1,5 +1,6 @@
 package com.example.SpringSecurity.config;
 
+import com.example.SpringSecurity.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -76,7 +77,7 @@ public class ProjectSecurityConfig {
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
         // http.formLogin(flc -> flc.disable());
         http.formLogin(withDefaults());
-        http.httpBasic(withDefaults());
+        http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         return http.build();
     }
 
