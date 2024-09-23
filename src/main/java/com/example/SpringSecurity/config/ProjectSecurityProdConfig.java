@@ -39,11 +39,17 @@ public class ProjectSecurityProdConfig {
     // In addition to session expiration, there are scenarios where sessions may become invalid for some reason. For example, if the user changes the JSESSIONID value in the cookie and then tries to access the API, the session is recognized as an invalid session.
     // In these scenarios too, instead of redirecting the user to the login page, the user can be redirected to the page defined for invalidSessionUrl.
 
+    // The default behavior is that there is no limit to the number of user sessions. That is, the user can log in without any restrictions from different devices or browsers.
+    // When a new session is created and the maximum number of sessions allowed has been reached, Spring Security provides two behaviors:
+    // Cancellation of old session: If the user creates a new session, his previous session will be canceled.
+    // Prevent new sessions from being created: You can prevent new sessions from being created using maxSessionsPreventsLogin(true). This will keep the first session active and block subsequent login attempts.
+    // Redirecting users to a custom page when their session expires or if they try to exceed the session limit is done using the expiredUrl() method.
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession"))
+        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // Only HTTPS
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
