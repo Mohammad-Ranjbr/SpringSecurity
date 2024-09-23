@@ -45,6 +45,30 @@ public class ProjectSecurityProdConfig {
     // Prevent new sessions from being created: You can prevent new sessions from being created using maxSessionsPreventsLogin(true). This will keep the first session active and block subsequent login attempts.
     // Redirecting users to a custom page when their session expires or if they try to exceed the session limit is done using the expiredUrl() method.
 
+    // Session Hijacking: It is an attack in which an attacker steals the user's Session ID to act on his behalf in the application.
+    // How does it happen?
+    // Session ID in URL: Some websites store Session ID in URL. An attacker can obtain this Session ID by accessing browser history or monitoring network traffic.
+    // Session ID in cookies: Other organizations store the Session ID in cookies so that if an attacker can steal the cookie, they can use the Session ID to perform operations.
+    // Network traffic: If the application uses HTTP instead of HTTPS, the attacker can obtain the Session ID by intercepting the network traffic.
+    // Prevention methods:
+    // Using HTTPS: Using HTTPS, Session IDs are transmitted encrypted and the attacker cannot see the traffic.
+    // Short session timeout (Session Timeout): Reducing the active time of the Session ID, especially in public places such as libraries, can mean that even if an attacker obtains the Session ID, he does not have much time to exploit it.
+    // Asking the user about using a public computer: Some programs ask the user during login if he is using a public system, and if the answer is positive, they take actions such as not saving the Session ID in cookies.
+
+    // Session Fixation
+    // Definition: In this attack, the attacker uses a specific Session ID for the victim after the victim logs in to the system.
+    // When an attacker enters a website, he receives a valid Session ID from the server.
+    // The attacker sends a deceptive link (containing his Session ID) to the victim, for example via email offering a discount or reward.
+    // The victim clicks on the link and enters the site and logs in with the attacker's Session ID.
+    // Once the victim logs in, all user information (such as payment details) is linked to the attacker's Session ID.
+    // Using their Session ID (which is now linked to the victim's information), the attacker can gain access to the victim's account and exploit it.
+    // Prevention methods:
+    // Spring Security prevents Session Fixation attacks by default. This prevention is done by changing the Session ID after user authentication, so that if the attacker has created an initial Session ID, after the victim login, a new Session ID is created that the attacker does not know. There are three strategies to manage this issue:
+    // Change Session ID: Session ID changes after login, but session information is preserved. This strategy is used by default by Spring Security.
+    // New Session: A new session is created with a new Session ID and the information of the previous session is not copied (except for security related information).
+    // Migrate Session: A new session is created with a new Session ID and all the information of the previous session is transferred to the new session.
+    // http.sessionManagement(sessionManagement -> sessionManagement.sessionFixation(sessionFixation -> sessionFixation.newSession()));
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
