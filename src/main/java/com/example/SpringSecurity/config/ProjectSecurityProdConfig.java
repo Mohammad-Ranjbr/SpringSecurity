@@ -17,11 +17,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class ProjectSecurityProdConfig {
 
+    // HTTPS ensures the security of data sent between the user and the server. By default, Spring Security accepts both HTTP and HTTPS requests.
+    // In order for the application to accept only HTTPS requests in the production environment, settings must be made. In the prod profile,
+    // sending an HTTP request causes an error because the request is redirected to the HTTPS port (usually 8443).
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // Only HTTPS
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("myAccount","myBalance","myLoans","myCards").authenticated()
                 .requestMatchers("notices","contact","/error","/register").permitAll());
