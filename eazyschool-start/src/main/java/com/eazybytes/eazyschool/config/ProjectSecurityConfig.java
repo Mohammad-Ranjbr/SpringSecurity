@@ -28,11 +28,24 @@ public class ProjectSecurityConfig {
         // but because the login page itself required authentication, the user was constantly redirected to this page.
         // To fix this problem, the /login path and any paths starting with it (using permitAll) were exempted from authentication.
 
+        // In Spring Security, these credentials are processed through the UsernamePasswordAuthenticationFilter filter.
+        // By default, this filter extracts username and password parameters from the request and checks them.
+        // Post-Login Redirection
+        // One of the problems mentioned in this text is that after a successful login, the user is redirected to the page they have previously viewed or to the home page (e.g. /home).
+        // This behavior can be annoying for users, especially if we want to direct users to a specific page, such as a dashboard.
+        // The defaultSuccessUrl() method is used. This method allows us to set a specific path (such as /dashboard) as the default page after a successful login.
+        // This will make the user always be directed to this page after successful login, without needing to refer to the previous page or the main page.
+        // By default, Spring Security uses username and password parameters for authentication. But sometimes we need to change these parameters. For example,
+        // use userID instead of username and secretPWD instead of password.
+        // After making these changes in the configuration, we must also apply the necessary changes in the HTML form of the login page (for example, login.html).
+        // That is, the names of the input fields for username and password must be matched with these new values
+        // Login Failed: If the username or password is incorrect, Spring Security automatically returns the user to the login page and adds the ?error parameter to the URL.
+
         http.csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/", "/home", "/holidays/**", "/contact", "/saveMsg",
                                 "/courses", "/about", "/assets/**","/login/**").permitAll())
-                .formLogin(flc -> flc.loginPage("/login"))
+                .formLogin(flc -> flc.loginPage("/login").usernameParameter("userid").passwordParameter("secretPwd").defaultSuccessUrl("/dashboard"))
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
