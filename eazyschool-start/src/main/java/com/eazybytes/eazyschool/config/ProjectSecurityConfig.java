@@ -20,11 +20,19 @@ public class ProjectSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
+        // Creating a custom login page: For this, a controller called LoginController is created that manages the /login path. This controller displays the login.html page.
+        // But there was a problem: Spring Security by default uses the POST method to display the login page, while this controller used the GET method,
+        // so the default Spring Security page was displayed.
+        // Too Many Redirects Problem: After applying the changes, a new problem appeared: the "Too Many Redirects" error.
+        // The reason for this problem was that Spring Security tried to redirect the user to the login page,
+        // but because the login page itself required authentication, the user was constantly redirected to this page.
+        // To fix this problem, the /login path and any paths starting with it (using permitAll) were exempted from authentication.
+
         http.csrf((csrf) -> csrf.disable())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").permitAll()
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/", "/home", "/holidays/**", "/contact", "/saveMsg",
-                                "/courses", "/about", "/assets/**").permitAll())
-                .formLogin(Customizer.withDefaults())
+                                "/courses", "/about", "/assets/**","/login/**").permitAll())
+                .formLogin(flc -> flc.loginPage("/login"))
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();

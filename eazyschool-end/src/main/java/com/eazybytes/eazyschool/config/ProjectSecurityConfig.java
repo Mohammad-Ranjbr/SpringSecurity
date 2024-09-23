@@ -59,8 +59,6 @@ public class ProjectSecurityConfig {
 
     /**
      * From Spring Security 6.3 version
-     *
-     * @return
      */
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker() {
