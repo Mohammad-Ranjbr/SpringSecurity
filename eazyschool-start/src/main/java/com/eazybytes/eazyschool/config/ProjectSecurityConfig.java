@@ -1,5 +1,8 @@
 package com.eazybytes.eazyschool.config;
 
+import com.eazybytes.eazyschool.handler.CustomAuthenticationFailureHandler;
+import com.eazybytes.eazyschool.handler.CustomAuthenticationSuccessHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
@@ -15,7 +18,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 
 @Configuration
+@RequiredArgsConstructor
 public class ProjectSecurityConfig {
+
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -41,11 +48,19 @@ public class ProjectSecurityConfig {
         // That is, the names of the input fields for username and password must be matched with these new values
         // Login Failed: If the username or password is incorrect, Spring Security automatically returns the user to the login page and adds the ?error parameter to the URL.
 
+        // defaultSuccessUrl: This method is used in Spring Security settings to determine the path to which the user will be redirected after
+        // successful login (with correct username and password). For example, the user may be redirected to the dashboard after successful login.
+        //failureUrl: This method specifies the path to be redirected to when the user fails to login (such as entering an incorrect username or password).
+        // Here, the instructor explains that parameters such as error=true can be added to the URL.
+        // Then in the controller, this parameter can be used to display an error message to the user.
+
         http.csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/", "/home", "/holidays/**", "/contact", "/saveMsg",
-                                "/courses", "/about", "/assets/**","/login/**").permitAll())
-                .formLogin(flc -> flc.loginPage("/login").usernameParameter("userid").passwordParameter("secretPwd").defaultSuccessUrl("/dashboard"))
+                                "/courses", "/about", "/assets/**","/login/**").permitAll()) //   /login/** For when the user logout  ->  /login?logout
+                .formLogin(flc -> flc.loginPage("/login").usernameParameter("userid").passwordParameter("secretPwd")
+                        .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true")
+                        .successHandler(customAuthenticationSuccessHandler).failureHandler(customAuthenticationFailureHandler))
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
