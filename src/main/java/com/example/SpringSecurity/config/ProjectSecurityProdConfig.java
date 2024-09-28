@@ -69,6 +69,34 @@ public class ProjectSecurityProdConfig {
     // Migrate Session: A new session is created with a new Session ID and all the information of the previous session is transferred to the new session.
     // http.sessionManagement(sessionManagement -> sessionManagement.sessionFixation(sessionFixation -> sessionFixation.newSession()));
 
+    // CORS (Cross-Origin Resource Sharing)
+    // A security mechanism that web browsers use to control which domains can access resources on a server. This mechanism is used to prevent insecure requests from other domains.
+    // CORS problem scenario:
+    // Let's say you have a web application running on the example.com domain. This application sends a request to receive information from an API server located in another domain, for example,
+    // api.anotherdomain.com. Due to browser security policies, this request may be rejected unless the API server has explicitly allowed access to the example.com domain.
+    // How CORS works:
+    // CORS works by using a series of HTTP headers that the server adds to its response. These headers specify whether a domain is allowed to send requests to the server or not.
+    // Access-Control-Allow-Origin Header: This header specifies which domains can access the server's resources.
+    // CSRF (Cross-Site Request Forgery)
+    // A type of security attack in which an attacker tries to abuse the credentials of an authenticated user and send invalid requests to the server on his behalf.
+    // This attack usually occurs when a user authenticates to a website while keeping their browser open.
+    // CSRF problem scenario:
+    // Suppose a user logs into their banking website and then simultaneously goes to a malicious website. Through the malicious website,
+    // the attacker tries to send requests such as money transfer to the bank server. Because the user is logged into their account and the session cookies are valid,
+    // the server accepts the request, even if the user does not actually intend to perform this operation.
+    // How CSRF works:
+    // The user logs into their account on a trusted site (e.g. bank.com).
+    // At the same time, the user enters a malicious site (e.g. evil.com).
+    // The malicious site sends a POST request to the bank site without the user's knowledge, through invisible forms or requests.
+    // Since the user is logged into their bank account and there are authentication cookies, the bank server confirms the request and the unwanted operation is performed.
+    // Preventing CSRF:
+    // To prevent CSRF, a security token (CSRF Token) is usually used. This token is sent to every form or request and must correctly and validly match every request sent to the server.
+    // The server also checks the validity of this token and rejects the request if it is not valid.
+    //  Difference between CORS and CSRF:
+    // CORS: Used to control and restrict requests from external domains to the server. Its main purpose is to ensure that server resources are only accessible by authorized domains.
+    // CSRF: An attack where existing user credentials are used to send fake requests. This attack usually takes place via a malicious form on an untrusted website.
+    // CORS is more concerned with controlling the access level of domains, while CSRF is concerned with preventing fraudulent requests by abusing a user's authentication session.
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
