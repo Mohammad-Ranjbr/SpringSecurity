@@ -2,6 +2,7 @@ drop table `authorities`;
 drop table `users`;
 drop table `customer`;
 
+
 CREATE TABLE `customer` (
                             `customer_id` int NOT NULL AUTO_INCREMENT,
                             `name` varchar(100) NOT NULL,
@@ -38,6 +39,7 @@ CREATE TABLE `accounts` (
 INSERT INTO `accounts` (`customer_id`, `account_number`, `account_type`, `branch_address`, `create_dt`)
 VALUES (1, 1865764534, 'Savings', '123 Main Street, New York', CURDATE());
 
+
 CREATE TABLE `account_transactions` (
                                         `transaction_id` varchar(200) NOT NULL,
                                         `account_number` int NOT NULL,
@@ -54,8 +56,6 @@ CREATE TABLE `account_transactions` (
                                         CONSTRAINT `accounts_ibfk_2` FOREIGN KEY (`account_number`) REFERENCES `accounts` (`account_number`) ON DELETE CASCADE,
                                         CONSTRAINT `acct_user_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
 );
-
-
 
 INSERT INTO `account_transactions` (`transaction_id`, `account_number`, `customer_id`, `transaction_dt`, `transaction_summary`, `transaction_type`,`transaction_amt`,
                                     `closing_balance`, `create_dt`)  VALUES (UUID(), 1865764534, 1, DATE_SUB(CURDATE(), INTERVAL 7 DAY), 'Coffee Shop', 'Withdrawal', 30,34500,DATE_SUB(CURDATE(), INTERVAL 7 DAY));
@@ -102,6 +102,7 @@ VALUES ( 1, '2018-02-14', 'Home', 50000, 10000, 40000, '2018-02-14');
 INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
 VALUES ( 1, '2018-02-14', 'Personal', 10000, 3500, 6500, '2018-02-14');
 
+
 CREATE TABLE `cards` (
                          `card_id` int NOT NULL AUTO_INCREMENT,
                          `card_number` varchar(100) NOT NULL,
@@ -124,6 +125,7 @@ VALUES ('3455XXXX8673', 1, 'Credit', 7500, 600, 6900, CURDATE());
 
 INSERT INTO `cards` (`card_number`, `customer_id`, `card_type`, `total_limit`, `amount_used`, `available_amount`, `create_dt`)
 VALUES ('2359XXXX9346', 1, 'Credit', 20000, 4000, 16000, CURDATE());
+
 
 CREATE TABLE `notice_details` (
                                   `notice_id` int NOT NULL AUTO_INCREMENT,
@@ -159,6 +161,7 @@ VALUES ('Launch of Millennia Cards', 'Millennia Credit Cards are launched for th
 INSERT INTO `notice_details` ( `notice_summary`, `notice_details`, `notic_beg_dt`, `notic_end_dt`, `create_dt`, `update_dt`)
 VALUES ('COVID-19 Insurance', 'EazyBank launched an insurance policy which will cover COVID-19 expenses. Please reach out to the branch for more details',
         CURDATE() - INTERVAL 30 DAY, CURDATE() + INTERVAL 30 DAY, CURDATE(), null);
+
 
 CREATE TABLE `contact_messages` (
                                     `contact_id` varchar(50) NOT NULL,
