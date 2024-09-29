@@ -74,7 +74,7 @@ public class ProjectSecurityConfig {
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("myAccount","myBalance","myLoans","myCards").authenticated()
+                .requestMatchers("myAccount","myBalance","myLoans","myCards","/user").authenticated()
                 .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
         // http.formLogin(flc -> flc.disable());
