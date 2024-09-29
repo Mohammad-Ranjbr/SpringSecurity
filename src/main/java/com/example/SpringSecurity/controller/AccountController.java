@@ -1,9 +1,14 @@
 package com.example.SpringSecurity.controller;
 
+import com.example.SpringSecurity.model.Accounts;
+import com.example.SpringSecurity.repository.AccountsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class AccountController {
 
     // SecurityContext is an interface in Spring Security whose main task is to maintain user authentication information during a request. During each request,
@@ -38,9 +43,11 @@ public class AccountController {
     // desktop applications where all requests are made by a single user. But in web applications where multiple users access the system,
     // this strategy is risky and can lead to security mistakes.
 
+    private final AccountsRepository accountsRepository;
+
     @GetMapping("/myAccount")
-    public String getAccount(){
-        return "Here are the account details from the DB";
+    public Accounts getAccountDetails(@RequestParam long id){
+        return accountsRepository.findByCustomerId(id);
     }
 
 }
