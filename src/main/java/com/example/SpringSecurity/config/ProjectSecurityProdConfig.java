@@ -97,6 +97,25 @@ public class ProjectSecurityProdConfig {
     // CSRF: An attack where existing user credentials are used to send fake requests. This attack usually takes place via a malicious form on an untrusted website.
     // CORS is more concerned with controlling the access level of domains, while CSRF is concerned with preventing fraudulent requests by abusing a user's authentication session.
 
+    // CSRF (Cross-Site Request Forgery) is a type of attack in which an unauthorized user can perform an operation in a web application using the credentials of another user.
+    // For example, a user may log into a banking website and then visit a malicious website that sends a hidden request to the banking website to transfer money.
+    // How it works: These attacks are usually carried out through the use of user cookies that are automatically sent in requests.
+    // A malicious website can send a request to a banking website (or any other website) that causes an unauthorized action to be performed.
+    // Spring Security's default configuration includes CSRF protection, and this can be incorrectly disabled.
+    // When CSRF protection is completely disabled, POST requests can be sent without any restrictions, which is not recommended for production applications.
+    // When the CSRF configuration is enabled, Spring Security blocks POST requests and issues a 403 (Forbidden) error.
+    // A 403 error means that the user is trying to submit data without a valid CSRF token.
+    // To avoid these errors, there are two options:
+    // Disable CSRF completely: This is not recommended as it compromises the security of the application.
+    // Understanding and Implementing CSRF: This option involves understanding how a CSRF attack works and then implementing a CSRF token in the application to verify that requests are valid.
+    // CSRF Token: One of the important ways to protect against CSRF is to use CSRF tokens. These tokens are added to every POST, PUT or DELETE request to prevent CSRF attacks.
+    // CSRF can lead to the disclosure of sensitive information or the modification of important data in web applications.
+    // Because of user credentials (such as cookies) that are automatically sent to websites, hackers can perform unauthorized actions without logging into the user's account.
+    // How CSRF Token works
+    // Token generation: Every time a user loads a form in the web application, a unique CSRF token is generated and placed in the form.
+    // Submit Token: When the user submits the form, this token is sent to the server along with the form data.
+    // Token Validation: The server verifies this token. If the token in the request does not match the token generated when the form is loaded, the request is rejected.
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());

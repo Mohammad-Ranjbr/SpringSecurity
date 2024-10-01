@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -75,21 +74,24 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
+        http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() { // Anonymous Class
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfiguration = new CorsConfiguration();
                         corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
                         corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
-                        corsConfiguration.setAllowCredentials(true);
+                        corsConfiguration.setAllowCredentials(true); // This line determines whether identity information (such as cookies or authentication tokens) is allowed to be sent with CORS requests.
                         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
-                        corsConfiguration.setMaxAge(3600L);
+                        corsConfiguration.setMaxAge(3600L); // This line determines when the browser can cache CORS settings.
+                        // In this example, by setting the value to 3600L (which equals 3600 seconds or one hour),
+                        // the browser can cache this setting for one hour. This means that for subsequent requests from the same origin,
+                        // the browser will not need to send a preflight request until this time expires.
                         return corsConfiguration;
                     }
                 }))
-                .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
+                //.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
-                .csrf(AbstractHttpConfigurer::disable)
+                //.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("myAccount","myBalance","myLoans","myCards","/user").authenticated()
                 .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
