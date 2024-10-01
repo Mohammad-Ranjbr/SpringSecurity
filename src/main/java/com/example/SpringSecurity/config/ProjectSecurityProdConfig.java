@@ -115,6 +115,19 @@ public class ProjectSecurityProdConfig {
     // Token generation: Every time a user loads a form in the web application, a unique CSRF token is generated and placed in the form.
     // Submit Token: When the user submits the form, this token is sent to the server along with the form data.
     // Token Validation: The server verifies this token. If the token in the request does not match the token generated when the form is loaded, the request is rejected.
+    // Even if CORS (Cross-Origin Resource Sharing) policies are implemented, CSRF can still occur.
+    // This is because requests are sent from within the browser to the same domain, and the browser has no reason to reject them.
+
+    // Step 1: Sign in to Netflix
+    // The user logs in to the Netflix website, and after logging in, a cookie (for example, abc123) is stored in the browser to identify the user.
+    // This cookie is only associated with the netflix.com domain and is not sent in requests to other domains.
+    // Step 2: Open a malicious website
+    // After watching a video, the user opens a new tab in their browser and goes to a malicious website (eg, evil.com).
+    // This malicious website contains links or banners that entice the user to click.
+    // Step 3: Execute the CSRF request
+    // When the user clicks on the link, the hacker has created an embedded form on the malicious website that sends a request to netflix.com.
+    // This form may contain parameters that identify the hacker's goal, such as changing the user's email address to the hacker's email address.
+    // When the user clicks on the link, the form is submitted automatically and the browser adds the abc123 cookie to the request.
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
