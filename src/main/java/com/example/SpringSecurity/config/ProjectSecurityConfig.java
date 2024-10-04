@@ -116,6 +116,7 @@ public class ProjectSecurityConfig {
                 // When a cookie is created, this value is set correctly. If it is set true, only the browser has access to this cookie and sends it in every request,
                 // because JavaScript needs to read this value from the cookies and put it in the header or body of the request. The value must be false
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                        .ignoringRequestMatchers("/contact","/register")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 // This code adds the CSRF filter after the BasicAuthenticationFilter. The reason for this arrangement
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
