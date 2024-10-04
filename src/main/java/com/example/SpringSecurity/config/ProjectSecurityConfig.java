@@ -9,12 +9,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -75,9 +77,26 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        // The task of this class is to read the CSRF token from the incoming requests and add it as
+        // an attribute to the requests. This handler reads the CSRF token from the header or request parameters.
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
         // http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() { // Anonymous Class
+
+        // This setting tells Spring Security that we don't need to manually (explicitly) store authentication or session information in the SecurityContextHolder. Spring Security does this automatically.
+        // This means that after each successful request (for example, after the user logs in), Spring Security will automatically store the credentials and session information in the SecurityContextHolder, and you don't need to do it manually.
+        // The connection with the session is that if requireExplicitSave(false) is not set manually (true), you must manage the SecurityContextHolder and manually save the credentials and session in it. As a result, if authentication information is not stored correctly, the user may be forced to sign in again.
+        // So this setting indirectly helps prevent credentials from being re-entered, as Spring Security automates the process.
+
+        http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
+                // That is, when the user enters the system for the first time, a session is created for him and this session
+                // is sent to the server with every subsequent request. Therefore, a new session is not created for each new request,
+                // but the session that was previously created for the user is still used.
+                //SessionCreationPolicy.ALWAYS ensures that there is always an active session for the user,
+                // and if the session is destroyed (for example, after a logout or timeout), a new session is created. Finally,
+                // the session contains the user's authentication information, so there is no need to re-enter credentials as long as the session is valid.
+                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() { // Anonymous Class
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -96,7 +115,8 @@ public class ProjectSecurityConfig {
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 // When a cookie is created, this value is set correctly. If it is set true, only the browser has access to this cookie and sends it in every request,
                 // because JavaScript needs to read this value from the cookies and put it in the header or body of the request. The value must be false
-                .csrf(csrfConfig -> csrfConfig.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 // This code adds the CSRF filter after the BasicAuthenticationFilter. The reason for this arrangement
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
                 .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
