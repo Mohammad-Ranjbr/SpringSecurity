@@ -36,6 +36,13 @@ public class CsrfTokenFilter extends OncePerRequestFilter {
     // until a specific request (usually data change requests such as POST or PUT) reaches the server,
     // this token will not be generated. This filter is specifically defined for this purpose so that the
     // CSRF token is forcibly generated during the first request and the corresponding cookie is sent to the client.
+
+    // Problem: After the user logs in, the Spring Boot server generates a CSRF token and sends it to the client along with a cookie.
+    // Solution in Angular: After completing the login process, we need to read the CSRF token stored in the cookie. For this,
+    // a TypeScript library is used, which allows us to read cookies from the client side.
+    // Saving the token in Session Storage: After reading the token from the cookie, we store it in the sessionStorage of the client.
+    // This makes the token available for subsequent requests
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
