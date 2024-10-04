@@ -2,6 +2,7 @@ package com.example.SpringSecurity.config;
 
 import com.example.SpringSecurity.exceptionhandling.CustomAccessDeniedHandler;
 import com.example.SpringSecurity.exceptionhandling.CustomBasicAuthenticationEntryPoint;
+import com.example.SpringSecurity.filter.CsrfTokenFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -91,7 +94,12 @@ public class ProjectSecurityConfig {
                 }))
                 //.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
-                //.csrf(AbstractHttpConfigurer::disable)
+                // When a cookie is created, this value is set correctly. If it is set true, only the browser has access to this cookie and sends it in every request,
+                // because JavaScript needs to read this value from the cookies and put it in the header or body of the request. The value must be false
+                .csrf(csrfConfig -> csrfConfig.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                // This code adds the CSRF filter after the BasicAuthenticationFilter. The reason for this arrangement
+                // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
+                .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("myAccount","myBalance","myLoans","myCards","/user").authenticated()
                 .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
