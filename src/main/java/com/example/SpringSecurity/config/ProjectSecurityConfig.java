@@ -3,6 +3,7 @@ package com.example.SpringSecurity.config;
 import com.example.SpringSecurity.exceptionhandling.CustomAccessDeniedHandler;
 import com.example.SpringSecurity.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import com.example.SpringSecurity.filter.AuthoritiesLoggingAfterFilter;
+import com.example.SpringSecurity.filter.AuthoritiesLoggingAtFilter;
 import com.example.SpringSecurity.filter.CsrfTokenFilter;
 import com.example.SpringSecurity.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -139,6 +140,7 @@ public class ProjectSecurityConfig {
                 .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
 //                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
 //                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
