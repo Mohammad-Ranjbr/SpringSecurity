@@ -3,6 +3,7 @@ package com.example.SpringSecurity.config;
 import com.example.SpringSecurity.exceptionhandling.CustomAccessDeniedHandler;
 import com.example.SpringSecurity.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import com.example.SpringSecurity.filter.CsrfTokenFilter;
+import com.example.SpringSecurity.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -135,6 +136,7 @@ public class ProjectSecurityConfig {
                 // This code adds the CSRF filter after the BasicAuthenticationFilter. The reason for this arrangement
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
                 .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
 //                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
 //                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
