@@ -2,11 +2,33 @@ package com.example.SpringSecurity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
+@EnableWebSecurity(debug = true) // Show security log
 public class EasyBankBackendApplication {
 
 	// The @EnableWebSecurity annotation is used in Spring Security, but is optional in Spring Boot. Spring Boot can automatically enable security based on dependencies added to the project.
+
+	// A filter chain consists of several filters that are executed sequentially. This chain is determined by your security configurations. For example,
+	// if you disable CSRF protection, the corresponding filter is removed from the chain. In other words, the chain of filters is dynamic and changes depending on your needs.
+	// How to run the chain of filters:
+	// A filter performs its task and then forwards the request to the next filter in the chain.
+	// This process continues until all filters are executed.
+	// After all security filters are implemented, the request is sent to the DispatcherServlet, which is responsible for routing the request to the appropriate controller.
+	// FilterChainProxy is the core in Spring Security for managing the chain of security filters. This class acts as the main entry point for processing security filters and works as follows:
+	// FilterChainProxy maintains a collection of filters that are applied to each HTTP request. These filters include Spring Security's built-in filters (such as UsernamePasswordAuthenticationFilter, CsrfFilter, BasicAuthenticationFilter, etc.) and custom filters that you may have added.
+	// Filters are selected dynamically and different filters are applied depending on the security configurations you have applied to the application.
+	// Internal Las VirtualFilterChain
+	// VirtualFilterChain is an internal class inside FilterChainProxy and is responsible for managing the execution of the filter chain. This class plays an important role in implementing the filter chain and works as follows:
+	// Running filters in a chain:
+	// When a request arrives at the VirtualFilterChain, this class executes each filter in the chain in turn.
+	// VirtualFilterChain has a field called currentPosition that stores the current state of the filters execution. This value indicates which filter to run next.
+	// Filter flow control:
+	// In the main doFilter method, it first checks whether all filters have been implemented or not. If currentPosition is equal to the number of filters, the execution of the chain is stopped and the request is sent to the main filter (or another service).
+	// If there are still filters left, the current filter is executed, and currentPosition is incremented by one until the next filter is executed.
+	// Chain execution logic:
+	// Each filter is implemented using the doFilter method. If the filters are all implemented, the request is forwarded to other parts of the application (such as the DispatcherServlet).
 
 	public static void main(String[] args) {
 		SpringApplication.run(EasyBankBackendApplication.class, args);
