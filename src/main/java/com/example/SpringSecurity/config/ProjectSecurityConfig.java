@@ -87,6 +87,8 @@ public class ProjectSecurityConfig {
     // If you want only users who have both "Admin" and "Manager" permissions to access a certain API, you can use access("hasAuthority('Admin') and hasAuthority('Manager')") method.
     // Or, if you want to allow access only to the user whose name matches the parameter in the URL, you can use SpEL to compare the authenticated username and the URL parameter.
 
+    // Roles must be registered in the database table with the ROLE_ prefix, but there is no need to use this prefix in the Spring Security configuration, as Spring Security adds it automatically.
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // The task of this class is to read the CSRF token from the incoming requests and add it as
@@ -134,10 +136,14 @@ public class ProjectSecurityConfig {
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
                 .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
-                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
-                .requestMatchers("myLoans").hasAuthority("VIEWLOANS")
-                .requestMatchers("myCards").hasAuthority("VIEWCARDS")
+//                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
+//                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
+//                .requestMatchers("myLoans").hasAuthority("VIEWLOANS")
+//                .requestMatchers("myCards").hasAuthority("VIEWCARDS")
+                .requestMatchers("myAccount").hasRole("USER")
+                .requestMatchers("myBalance").hasAnyRole("USER","ADMIN")
+                .requestMatchers("myLoans").hasRole("USER")
+                .requestMatchers("myCards").hasRole("USER")
                 .requestMatchers("/user").authenticated()
                 .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
