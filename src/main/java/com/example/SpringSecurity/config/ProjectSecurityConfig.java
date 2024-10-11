@@ -75,6 +75,18 @@ public class ProjectSecurityConfig {
 
     // In Spring Security, CSRF is enabled by default and provides protection for APIs that modify data (such as POST, PUT, DELETE).
 
+    // Apply Authorization rules with hasAuthority
+    // The user is modifying code that previously only checked authentication for APIs. It now wants to ensure that only users with specific permissions can access any API.
+    // For example, for the My Account API, only users with the "View Account" permission should have access. For this, the hasAuthority("View Account") method is used.
+    // Use hasAnyAuthority
+    // In some cases, you may want users with one of several specific permissions to access the API. For example,
+    // if a user has both "View Account" and "View Balance" permissions, they can access the My Balance API.
+    // In this case, the method hasAnyAuthority("View Balance", "View Account") is used.
+    // Use access for complex conditions
+    // When more complex rules are needed, the access method is used. This way you can use Spring Expression Language (SpEL) and apply more complex conditions like comparing values or combining multiple conditions. For example:
+    // If you want only users who have both "Admin" and "Manager" permissions to access a certain API, you can use access("hasAuthority('Admin') and hasAuthority('Manager')") method.
+    // Or, if you want to allow access only to the user whose name matches the parameter in the URL, you can use SpEL to compare the authenticated username and the URL parameter.
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // The task of this class is to read the CSRF token from the incoming requests and add it as
@@ -122,7 +134,11 @@ public class ProjectSecurityConfig {
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
                 .addFilterAfter(new CsrfTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("myAccount","myBalance","myLoans","myCards","/user").authenticated()
+                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
+                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
+                .requestMatchers("myLoans").hasAuthority("VIEWLOANS")
+                .requestMatchers("myCards").hasAuthority("VIEWCARDS")
+                .requestMatchers("/user").authenticated()
                 .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
         // http.formLogin(flc -> flc.disable());
