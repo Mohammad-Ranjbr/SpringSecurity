@@ -347,7 +347,6 @@ public class ProjectSecurityConfig {
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
         providerManager.setEraseCredentialsAfterAuthentication(false);
         return providerManager;
-
     }
 
 }
