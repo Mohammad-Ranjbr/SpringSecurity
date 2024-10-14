@@ -2,13 +2,40 @@ package com.example.SpringSecurity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
 @EnableWebSecurity//(debug = true) // Show security log
+@EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 public class EasyBankBackendApplication {
 
 	// The @EnableWebSecurity annotation is used in Spring Security, but is optional in Spring Boot. Spring Boot can automatically enable security based on dependencies added to the project.
+
+	// (Method Level Security): The goal is to apply security to Java methods in addition to the API level. In this way, using Spring Security,
+	// we can manage access to Java methods (whether in the controller, service, or repository layer) and ensure that only authorized and valid users can access these methods.
+	// In complex applications where different parts of the application have access to sensitive data, only API level protection is not enough.
+	// Java methods may directly access sensitive data or perform sensitive operations. Therefore,
+	// applying security at this level means stricter control and preventing unauthorized access to the program's internal resources.
+	// @EnableMethodSecurity annotation
+	// To enable method-level security in Spring, we use the @EnableMethodSecurity annotation.
+	// This annotation can be placed in the main Spring Boot class or in a configuration class.
+	// When this annotation is enabled, we can use other annotations to implement authorization. The important parameters of this annotation are:
+	// prePostEnabled: This parameter allows us to use advanced annotations such as @PreAuthorize and @PostAuthorize.
+	// Its default value is true, that is, if you don't give this parameter, these annotations are automatically enabled.
+	// securedEnabled: This parameter enables the use of the @Secured annotation,
+	// which is an older method for method security. If you want to use this annotation, you must set it to true.
+	// jsr250Enabled: This parameter is for using the @RolesAllowed annotation, which works according to the JSR-250 standard. To enable it, you must set this parameter to true.
+	// Security at the method level in Spring Security is done in two main ways:
+	// A) Invocation Authorization
+	// In this approach, security is decided based on whether a particular method should be called or not. For example,
+	// by using the @PreAuthorize annotation, you can check whether the current user has permission to access the method before executing a method.
+	// b) Filtering Authorization
+	// In this approach, in addition to controlling the method call, you can also filter the input and output data of the method.
+	// This can be useful when you need to validate input parameters or control output data. For this, you can use @PreFilter and @PostFilter annotations.
+	// Difference between @EnableMethodSecurity and @EnableGlobalMethodSecurity
+	// In previous versions of Spring Security, the @EnableGlobalMethodSecurity annotation was used to enable method-level security.
+	// But this annotation is obsolete in newer versions and is no longer recommended. You should use @EnableMethodSecurity instead.
 
 	// A filter chain consists of several filters that are executed sequentially. This chain is determined by your security configurations. For example,
 	// if you disable CSRF protection, the corresponding filter is removed from the chain. In other words, the chain of filters is dynamic and changes depending on your needs.
