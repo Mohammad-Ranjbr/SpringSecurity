@@ -7,9 +7,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -135,7 +138,7 @@ public class ProjectSecurityConfig {
                 // When a cookie is created, this value is set correctly. If it is set true, only the browser has access to this cookie and sends it in every request,
                 // because JavaScript needs to read this value from the cookies and put it in the header or body of the request. The value must be false
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        .ignoringRequestMatchers("/contact","/register")
+                        .ignoringRequestMatchers("/contact","/register","/apiLogin")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 // This code adds the CSRF filter after the BasicAuthenticationFilter. The reason for this arrangement
                 // is that authentication must be done first so that we can generate the CSRF token for subsequent requests.
@@ -155,7 +158,7 @@ public class ProjectSecurityConfig {
                 .requestMatchers("myLoans").hasRole("USER")
                 .requestMatchers("myCards").hasRole("USER")
                 .requestMatchers("/user").authenticated()
-                .requestMatchers("notices","contact","/error","/register","/invalidSession").permitAll());
+                .requestMatchers("notices","contact","/error","/register","/invalidSession","/apiLogin").permitAll());
         // It is deprecated and cannot be disabled with the disable method, we must disable its entry
         // http.formLogin(flc -> flc.disable());
         http.formLogin(withDefaults());
@@ -335,6 +338,16 @@ public class ProjectSecurityConfig {
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker(){
         return new HaveIBeenPwnedRestApiPasswordChecker();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
+        EazyBankUsernamePasswordAuthenticationProvider authenticationProvider =
+                new EazyBankUsernamePasswordAuthenticationProvider(userDetailsService, passwordEncoder);
+        ProviderManager providerManager = new ProviderManager(authenticationProvider);
+        providerManager.setEraseCredentialsAfterAuthentication(false);
+        return providerManager;
+
     }
 
 }

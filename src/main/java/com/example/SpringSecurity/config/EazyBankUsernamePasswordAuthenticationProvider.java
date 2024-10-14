@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 // Active for all profiles except prod
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class EazyBankUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     // Password validation based on profiles:
     // In non-executive profiles (e.g. development or test), the instructor suggests not validating the password and accepting any password.
