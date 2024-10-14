@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
-@EnableWebSecurity(debug = true) // Show security log
+@EnableWebSecurity//(debug = true) // Show security log
 public class EasyBankBackendApplication {
 
 	// The @EnableWebSecurity annotation is used in Spring Security, but is optional in Spring Boot. Spring Boot can automatically enable security based on dependencies added to the project.

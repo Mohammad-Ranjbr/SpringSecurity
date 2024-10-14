@@ -21,6 +21,15 @@ import java.nio.charset.StandardCharsets;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
+    // When the user logs in and the login information is correct, the server sends a JWT token to the user's browser in its response.
+    // This token contains the user's identity information, which is sent to the server in subsequent requests so that the user does not need to log in again.
+    // In Angular, after a successful login, the token is received from the response header and stored in the session storage.
+    // Session storage is used for the reason that the information stored in it is deleted when the browser tab or the browser itself is closed.
+    // Session Storage is more secure than Local Storage because the data is kept only as long as the browser tab is open.
+    // Interceptor in Angular is a type of service that is connected to every HTTP request sent from the browser
+    // to the server and has the ability to manipulate the request. We use the Interceptor to add the JWT token to the header of each request.
+    // When the user logs out, the JWT token must be deleted from the session storage to prevent any misuse.
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                                     throws ServletException, IOException {
