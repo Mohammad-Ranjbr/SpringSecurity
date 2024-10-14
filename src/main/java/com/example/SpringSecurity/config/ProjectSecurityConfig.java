@@ -2,10 +2,7 @@ package com.example.SpringSecurity.config;
 
 import com.example.SpringSecurity.exceptionhandling.CustomAccessDeniedHandler;
 import com.example.SpringSecurity.exceptionhandling.CustomBasicAuthenticationEntryPoint;
-import com.example.SpringSecurity.filter.AuthoritiesLoggingAfterFilter;
-import com.example.SpringSecurity.filter.AuthoritiesLoggingAtFilter;
-import com.example.SpringSecurity.filter.CsrfTokenFilter;
-import com.example.SpringSecurity.filter.RequestValidationBeforeFilter;
+import com.example.SpringSecurity.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -105,14 +103,17 @@ public class ProjectSecurityConfig {
         // The connection with the session is that if requireExplicitSave(false) is not set manually (true), you must manage the SecurityContextHolder and manually save the credentials and session in it. As a result, if authentication information is not stored correctly, the user may be forced to sign in again.
         // So this setting indirectly helps prevent credentials from being re-entered, as Spring Security automates the process.
 
-        http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
+        // Because the JSessionID is no longer used, the SecurityContext configurations will also be removed. These changes are due to the application being stateless, and in this case there is no need to save the session on the server side.
+
+        http
                 // That is, when the user enters the system for the first time, a session is created for him and this session
                 // is sent to the server with every subsequent request. Therefore, a new session is not created for each new request,
                 // but the session that was previously created for the user is still used.
-                //SessionCreationPolicy.ALWAYS ensures that there is always an active session for the user,
+                // SessionCreationPolicy.ALWAYS ensures that there is always an active session for the user,
                 // and if the session is destroyed (for example, after a logout or timeout), a new session is created. Finally,
                 // the session contains the user's authentication information, so there is no need to re-enter credentials as long as the session is valid.
-                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                // You use the SessionCreationPolicy.STATELESS policy, which tells Spring Security not to manage sessions and to process requests stateless.
+                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() { // Anonymous Class
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -120,7 +121,8 @@ public class ProjectSecurityConfig {
                         corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
                         corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                         corsConfiguration.setAllowCredentials(true); // This line determines whether identity information (such as cookies or authentication tokens) is allowed to be sent with CORS requests.
-                        corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+                        corsConfiguration.setAllowedHeaders(Collections.singletonList("*")); // The client can send different headers
+                        corsConfiguration.setExposedHeaders(List.of("Authorization")); // The headers that the backend can send to the frontend
                         corsConfiguration.setMaxAge(3600L); // This line determines when the browser can cache CORS settings.
                         // In this example, by setting the value to 3600L (which equals 3600 seconds or one hour),
                         // the browser can cache this setting for one hour. This means that for subsequent requests from the same origin,
@@ -141,6 +143,8 @@ public class ProjectSecurityConfig {
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
 //                .requestMatchers("myAccount").hasAuthority("VIEWACCOUNT")
 //                .requestMatchers("myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
