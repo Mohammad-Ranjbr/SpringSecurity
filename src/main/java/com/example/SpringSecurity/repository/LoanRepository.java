@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface LoanRepository extends JpaRepository<Loans, Long> {
 
+    // @PreAuthorize is used to check user access before executing the method.
+    //@PreAuthorize("hasRole('USER')")
     List<Loans> findByCustomerIdOrderByStartDtDesc(long customerId);
 
 }
