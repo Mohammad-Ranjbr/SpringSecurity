@@ -64,13 +64,16 @@ public class UserController {
         return optionalCustomer.orElse(null);
     }
 
+    // Sometimes, in real projects, it is necessary to send the login information in the request body and not in the header (such as Basic Authentication).
+    // This scenario gives you more control over authentication and request structure.
+
     @PostMapping("/apiLogin")
     public ResponseEntity<LoginResponseDTO> apiLogin (@RequestBody LoginRequestDTO loginRequest) {
         String jwt = "";
         Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
-                loginRequest.password());
+                loginRequest.password()); // convert login request to authenticate object
         Authentication authenticationResponse = authenticationManager.authenticate(authentication);
-        if(null != authenticationResponse && authenticationResponse.isAuthenticated()) {
+        if(authenticationResponse != null && authenticationResponse.isAuthenticated()) {
             if (null != env) {
                 String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,
                         ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);

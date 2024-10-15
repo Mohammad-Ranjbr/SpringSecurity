@@ -340,12 +340,13 @@ public class ProjectSecurityConfig {
         return new HaveIBeenPwnedRestApiPasswordChecker();
     }
 
+    // We need AuthenticationManager to authenticate manually
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
         EazyBankUsernamePasswordAuthenticationProvider authenticationProvider =
                 new EazyBankUsernamePasswordAuthenticationProvider(userDetailsService, passwordEncoder);
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
-        providerManager.setEraseCredentialsAfterAuthentication(false);
+        providerManager.setEraseCredentialsAfterAuthentication(false); // providerManager does not delete the password in the authentication object, we may need it later
         return providerManager;
     }
 
