@@ -1,0 +1,30 @@
+One of the first problems that OAuth 2 solves is the need for separate authentication for each service. The teacher gives an example of Google products; For example, Gmail, Google Maps, YouTube, Google Photos, and Google Drive all use an integrated authentication system. This means that a user with a single account (such as a Gmail account) can access all these services without logging in again.
+How it works
+Behind the scenes, Google uses an authentication server (Authorization Server) which is responsible for storing user information and authentication. Every application that the user uses connects to this server for authentication. When a user logs into an application (eg Gmail), a token is sent to the user's browser from the authentication server. This token is stored in the browser and sent to other applications (such as YouTube) on subsequent requests. Different applications trust this token and there is no need to re-enter the user. In this way, authentication is done only once and the user does not need to enter his information several times.
+
+Separation of security logic from applications
+By suggesting the use of a separate authentication server, OAuth 2 solves the problems that arise in the absence of this system. In organizations that do not use OAuth 2, different applications are forced to implement separate authentication and authorization logic for each service. For example, a bank that has separate systems for accounts, loans, and cards would, without OAuth 2, need to create a separate user for each system and store their information separately. This adds complexity to managing accounts and information, and if a change in security logic (such as authentication or permissions) is required, the change must be applied to all systems, a complex and time-consuming process.
+
+Security problem in information sharing
+One of the main benefits of OAuth 2 is preventing the insecure sharing of user information. Consider a scenario where a photo editor wants to access a user's photos in Google Photos. Without OAuth 2, the user would have to enter their Google credentials into the photo editing app, which could be dangerous, as the app might misuse the information. But with OAuth 2, instead of entering user credentials, Google gives the photo editing app a temporary token that only allows access to photos. This token cannot perform sensitive operations such as changing passwords or deleting photos and will only have access to specific items defined by the user.
+
+OAuth stands for Open Authorization and OAuth 2.0 is the second version of this standard. This security protocol allows developers to allow users to allow third-party applications to access their information without having to share a password.
+OAuth 2 is a free and open source standard developed by the open source community. Organizations and companies are required to comply with this protocol to implement the authentication and authorization process. In other words, OAuth 2.0 is a protocol or framework, not a product or library.
+OAuth 2 allows third-party applications to access a user's data in other services without having to share a user's password. These accesses are often managed in the form of access tokens.
+In OAuth 2, instead of using the user's password directly, tokens are used to manage access. These tokens include the following:
+Access Token: Allows third-party applications limited access to user data. The example given by the instructor is similar to an access card in a hotel or an office that allows you to access only certain areas.
+ID Token: used to identify the user in the authentication system.
+Refresh Token: It is used to renew or renew the Access Token without having to ask for user credentials (password) again. This mechanism allows applications to maintain access after a token expires without requiring the user to log in again.
+Grant Types (stream type in OAuth 2)
+OAuth 2 has several types of flow (Grant Type) that are used depending on the specific scenario or type of application. These flows determine how and under what conditions access to data is granted:
+Authorization Code Flow: This is the most common flow and is used for applications that require user interaction, such as websites. In this flow, the user first grants access to the application by providing permission, and then the application receives an access token.
+PKCE (Proof Key for Code Exchange): This stream is mostly used for JavaScript and mobile applications that need more security. PKCE is an extension to Authorization Code Flow designed to counter Man-in-the-middle attacks.
+Client Credentials Flow: This flow is used when two systems or backend services communicate without user intervention. For example, when an API needs to access another API.
+Device Authorization Flow: This flow is used for devices that do not have standard user input (such as a keyboard), such as smart TVs or IoT devices. In this scenario, the user is authenticated through another device (such as a mobile).
+Implicit Flow: This flow is the older version of Authorization Code Flow that directly returns the access token to the application, but it is no longer recommended due to security issues and has been removed in the new versions of OAuth 2.1.
+Password Grant: This flow is also old and directly sends the user's password to the server to receive the access token. This stream is now deprecated and removed due to security issues.
+OAuth 2.1 is a newer version of the protocol that introduces some small but important changes to improve security and ease of use.
+In OAuth 2.1, some old flows such as Implicit Flow and Password Grant have been removed due to security weaknesses.
+Authorization Code and PKCE are integrated in OAuth 2.1 and used as a combined flow instead of being used separately.
+OAuth 2.1 aims to reduce confusion and provide a simpler and more secure framework for authentication and authorization.
+
