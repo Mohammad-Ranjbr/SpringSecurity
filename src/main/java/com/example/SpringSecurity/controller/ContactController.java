@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 @RestController
 @RequiredArgsConstructor
 public class ContactController {
@@ -31,6 +35,53 @@ public class ContactController {
             Contact savedContact =  contactRepository.save(contact);
             returnContacts.add(savedContact);
         }
+
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL("https://console.melipayamak.com/api/send/simple/dea72f061d9d4afaaebfff133de91263");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true);
+
+            String params = "{\"from\": \"50002710023346\", \"to\": \"09105297973\", \"text\": \"test sms\"}";
+            try (DataOutputStream dos = new DataOutputStream(conn.getOutputStream())) {
+                byte[] paramsAsByte = params.getBytes("utf-8");
+                dos.write(paramsAsByte, 0, paramsAsByte.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                System.out.println("Response Code: " + responseCode);
+                System.out.println("Response: " + response.toString());
+            }
+
+        } catch (Exception e) {
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+                StringBuilder errorResponse = new StringBuilder();
+                String errorLine;
+                while ((errorLine = br.readLine()) != null) {
+                    errorResponse.append(errorLine.trim());
+                }
+                System.err.println("Error Response: " + errorResponse.toString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+
         return returnContacts;
     }
 
